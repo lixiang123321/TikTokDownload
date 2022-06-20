@@ -197,8 +197,9 @@ class TikTok():
         response = requests.get(url = api_post_url, headers = self.headers)
         html = json.loads(response.content.decode())
         self.nickname = html['aweme_list'][0]['author']['nickname']
-        if not os.path.exists(self.save + self.mode + "\\" + self.nickname):
-                os.makedirs(self.save + self.mode + "\\" + self.nickname)
+        dir_name = os.path.join(self.save, self.mode, self.nickname)
+        if not os.path.exists(dir_name):
+                os.makedirs(dir_name)
 
         self.get_data(api_post_url, max_cursor)
         return api_post_url,max_cursor,self.sec
@@ -318,7 +319,7 @@ class TikTok():
         if nickname == []:
             return
         else:
-            v_info = os.listdir((self.save + self.mode + "\\" + nickname))
+            v_info = os.listdir(os.path.join(self.save, self.mode, nickname))
         return v_info
 
     # 音视频下载
@@ -327,7 +328,8 @@ class TikTok():
         new_video_list = [];uri_url = 'https://aweme.snssdk.com/aweme/v1/play/?video_id=%s&radio=1080p&line=0'
         # 创建并检测下载目录是否存在
         try:
-            os.makedirs(self.save + self.mode + "\\" + nickname[0])
+            dir_name = os.path.join(self.save, self.mode, nickname[0])
+            os.makedirs(dir_name)
         except:
             pass
 
@@ -385,12 +387,13 @@ class TikTok():
                         print('[  音频  ]:'+ creat_time + author_list[i]+'[文件 大小]:{size:.2f} MB'.format(
                             size = content_size / chunk_size /1024))    # 开始下载，显示下载文件大小
 
+                        dir_name = os.path.join(self.save, self.mode, nickname[i])
                         if self.mode == 'post':
-                            m_url = self.save + self.mode + "\\" + nickname[i] + '\\' + creat_time + re.sub(
-                                r'[\\/:*?"<>|\r\n]+', "_", music_title) + '_' + author_list[i] + '.mp3'
+                            m_url = os.path.join(dir_name, creat_time + re.sub(
+                                r'[\\/:*?"<>|\r\n]+', "_", music_title) + '_' + author_list[i] + '.mp3')
                         else:
-                            m_url = self.save + self.mode + "\\" + self.nickname + '\\' + str(self.like_counts)+ '、' + re.sub(
-                                r'[\\/:*?"<>|\r\n]+', "_", music_title) + '_' + author_list[i] + '.mp3'
+                            m_url = os.path.join(dir_name, str(self.like_counts)+ '、' + re.sub(
+                                r'[\\/:*?"<>|\r\n]+', "_", music_title) + '_' + author_list[i] + '.mp3')
 
                         with open(m_url,'wb') as file:                  # 显示进度条
                             for data in music.iter_content(chunk_size = chunk_size):
@@ -423,11 +426,11 @@ class TikTok():
                             size = content_size / chunk_size /1024))    # 开始下载，显示下载文件大小
 
                         if self.mode == 'post':
-                            v_url = self.save + self.mode + "\\" + nickname[i] + '\\' + creat_time + re.sub(
-                                r'[\\/:*?"<>|\r\n] + ', "_", author_list[i]) + '.mp4'
+                            v_url = os.path.join(dir_name, creat_time + re.sub(
+                                r'[\\/:*?"<>|\r\n] + ', "_", author_list[i]) + '.mp4')
                         else:
-                            v_url = self.save + self.mode + "\\" + self.nickname + '\\' + str(self.like_counts)+ '、' + re.sub(
-                                r'[\\/:*?"<>|\r\n] + ', "_", author_list[i]) + '.mp4'
+                            v_url = os.path.join(dir_name, str(self.like_counts)+ '、' + re.sub(
+                                r'[\\/:*?"<>|\r\n] + ', "_", author_list[i]) + '.mp4')
 
                         with open(v_url,'wb') as file:                  # 显示进度条
                             for data in video.iter_content(chunk_size = chunk_size):
