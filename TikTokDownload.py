@@ -62,6 +62,14 @@ def download(video_url,music_url,video_title,music_title,headers,musicarg):
         r=requests.get(url=video_url,headers=headers)
         if video_title == '':
             video_title = '[  提示  ]:此视频没有文案_%s\r' % music_title
+
+        try: 
+            if '/' in musicarg:
+                # 本地指定了路径及文件名
+                video_title = musicarg
+        except Exception:
+            print(Exception)
+
         with open(f'{video_title}.mp4','wb') as f:
             f.write(r.content)
             print('[  视频  ]:%s下载完成\r' % video_title)
